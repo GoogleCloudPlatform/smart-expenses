@@ -1,0 +1,14 @@
+* {
+    font-family: var(--sl-font-sans);
+}
+
+body {
+    padding: var(--sl-spacing-large);
+}
+
+h1 {
+    background-color: var(--sl-color-primary-500);
+    color: var(--sl-color-white);
+    padding: var(--sl-spacing-large);
+    border-radius: var(--sl-border-radius-x-large);
+}

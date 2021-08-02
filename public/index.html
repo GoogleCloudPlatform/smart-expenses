@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Smart Expenses — Welcome!</title>
+  <script type="module">
+    document.documentElement.classList.remove('no-js');
+    document.documentElement.classList.add('js');
+  </script>
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/hashids/2.2.8/hashids.min.js" integrity="sha512-NynLz/osGj7f9xoNpwgyE4In68ylN8GKsWCmXGfWzl/jAtTz/NestmRBt3lZOdkagHkz7jPARbfrbF+DgmaUtQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.47/dist/themes/base.css">
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.47/dist/shoelace.js"></script>
+
+  <style>
+      body {
+          width: 100%;
+          height: 100vh;
+          display: grid;
+          justify-content: center;
+          justify-items: center;
+      }
+  </style>
+</head>
+
+<body>
+<div></div>
+<div>
+    <sl-button id="requestBtn" size="large" type="primary" pill style="margin-right: 20px">
+        <sl-icon slot="prefix" name="file-earmark-plus-fill"></sl-icon>
+        New report
+    </sl-button>
+
+    <sl-button id="adminBtn" size="large" type="danger" pill style="margin-left: 20px">
+        <sl-icon slot="prefix" name="gear-fill"></sl-icon>
+        Administration
+    </sl-button>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", async function (event) {
+    const hashids = new Hashids();
+    const newReportId = hashids.encode(new Date().getTime() - 1627897194822);
+
+    const requestBtn = document.getElementById("requestBtn");
+    const adminBtn = document.getElementById("adminBtn");
+
+    requestBtn.onclick = e => {
+        window.location = `/request/${newReportId}`;
+    }
+
+    adminBtn.onclick = e => {
+        window.location = "/admin";
+    }
+});
+</script>
+</body>
+</html>

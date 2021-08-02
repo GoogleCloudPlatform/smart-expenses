@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Smart Expenses — New expense report</title>
+  <script type="module">
+    document.documentElement.classList.remove('no-js');
+    document.documentElement.classList.add('js');
+  </script>
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.47/dist/themes/base.css">
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.47/dist/shoelace.js"></script>
+  <link rel="stylesheet" href="/style.css">
+  <style>
+
+  </style>
+</head>
+
+<body>
+<h1 x-data="{ message: `REPORT > #${window.location.pathname.substring(9).toUpperCase()}` }" x-text="message"></h1>
+
+<h2>Uploaded receipts</h2>
+
+<sl-card class="card-header">
+    <sl-tooltip content="Restaurant receipt.pdf">
+        <div>
+    <img 
+        slot="image" style="max-width: 200px"
+        src="https://images.unsplash.com/photo-1559209172-0ff8f6d49ff7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=80">
+        </div>
+    </sl-tooltip>
+
+    <div slot="footer">
+        <sl-button type="danger" pill>
+            <sl-icon slot="prefix" name="trash-fill"></sl-icon>
+            Delete
+        </sl-button>
+    </div>
+</sl-card>
+
+
+
+<br>
+<br>
+
+<sl-button id="addBtn" size="large" type="primary" pill style="margin-right: 20px">
+    <sl-icon slot="prefix" name="file-earmark-plus-fill"></sl-icon>
+    Add new receipt
+</sl-button>
+
+<br>
+<br>
+
+<sl-alert type="warning" open>
+    <sl-icon slot="icon" name="exclamation-triangle"></sl-icon>
+    <strong>Report not submitted</strong><br>
+    Your report hasn't been submitted yet. Feel free to add new receipts, and click "Submit report" to submit your report for approval.
+</sl-alert>
+
+<br>
+
+<sl-button id="submitBtn" size="large" type="success" pill style="margin-right: 20px">
+    <sl-icon slot="prefix" name="arrow-right-circle-fill"></sl-icon>
+    Submit report
+</sl-button>
+
+<script>
+
+</script>
+</body>
+</html>
