@@ -1,0 +1,8 @@
+{
+  "name": "start-batch-processing-workflow",
+  "version": "0.0.1",
+  "dependencies": {
+    "@google-cloud/workflows": "^1.2.5",
+    "cors": "^2.8.5"
+  }
+}
