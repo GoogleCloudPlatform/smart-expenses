@@ -105,3 +105,6 @@ dist
 
 # VSCode
 .vscode
+
+# Firebase
+.firebase
