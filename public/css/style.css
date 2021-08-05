@@ -12,3 +12,15 @@ h1 {
     padding: var(--sl-spacing-large);
     border-radius: var(--sl-border-radius-x-large);
 }
+
+.thumbnail {
+    object-fit: cover;
+    object-position: center;
+    height: 200px;
+    width: 200px;
+    margin: var(--sl-spacing-medium);
+    box-shadow: var(--sl-shadow-large);
+    border-radius: var(--sl-border-radius-x-large);
+    border-width: var(--sl-spacing-x-small);
+    border-color: white;
+}

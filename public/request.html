@@ -18,33 +18,22 @@
 <span id="request">
 <h1><sl-icon slot="prefix" name="file-earmark-plus-fill"></sl-icon> Report: {{reportId}}</h1>
 
+<sl-form id="formFiles">
 <input type="hidden" name="reportId" v-model="reportId">
 
 <h2>Uploaded receipts</h2>
 
-<sl-card class="card-header">
-    <sl-tooltip content="Restaurant receipt.pdf">
-        <div>
-    <img 
-        slot="image" style="max-width: 200px"
-        src="https://images.unsplash.com/photo-1559209172-0ff8f6d49ff7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=80">
-        </div>
+<div v-if="images">
+    <sl-tooltip v-for="img in images" :content="img.title">
+        <img :src="img.src" :title="img.title" class="thumbnail"/>
     </sl-tooltip>
-
-    <div slot="footer">
-        <sl-button type="danger" pill>
-            <sl-icon slot="prefix" name="trash-fill"></sl-icon>
-            Delete
-        </sl-button>
-    </div>
-</sl-card>
+</div>
+<input id="filesInput" type="file"  @change="onFileChange" multiple style="display: none;">
 
 <br>
-<br>
-
-<sl-button id="addBtn" size="large" type="primary" pill style="margin-right: 20px">
+<sl-button id="addBtn" size="large" type="primary" pill @click="clickFileChooser">
     <sl-icon slot="prefix" name="file-earmark-plus-fill"></sl-icon>
-    Add new receipt
+    Select receipts
 </sl-button>
 
 <br>
@@ -58,12 +47,13 @@
 
 <br>
 
-<sl-button id="submitBtn" size="large" type="success" pill style="margin-right: 20px"
-    @click="alert('Hello World!')">
+<sl-button submit id="submitBtn" size="large" type="success" pill style="margin-right: 20px">
     <sl-icon slot="prefix" name="arrow-right-circle-fill"></sl-icon>
     Submit report
 </sl-button>
 </span>
+
+</sl-form>
 
 <script type="module" src="/js/common.js"></script>
 <script type="module" src="/js/request.js"></script>
