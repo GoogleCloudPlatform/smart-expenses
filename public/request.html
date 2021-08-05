@@ -21,8 +21,6 @@
 <sl-form id="formFiles">
 <input type="hidden" name="reportId" v-model="reportId">
 
-<h2>Uploaded receipts</h2>
-
 <div v-if="images">
     <sl-tooltip v-for="img in images" :content="img.title">
         <img :src="img.src" :title="img.title" class="thumbnail"/>
