@@ -8,17 +8,17 @@
     document.documentElement.classList.remove('no-js');
     document.documentElement.classList.add('js');
   </script>
-  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.47/dist/themes/base.css">
   <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.47/dist/shoelace.js"></script>
-  <link rel="stylesheet" href="/style.css">
-  <style>
-
-  </style>
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 
 <body>
-<h1 x-data="{ message: `REPORT > #${window.location.pathname.substring(9).toUpperCase()}` }" x-text="message"></h1>
+<span id="request">
+<h1><sl-icon slot="prefix" name="file-earmark-plus-fill"></sl-icon> Report: {{reportId}}</h1>
+
+<input type="hidden" name="reportId" v-model="reportId">
 
 <h2>Uploaded receipts</h2>
 
@@ -58,13 +58,14 @@
 
 <br>
 
-<sl-button id="submitBtn" size="large" type="success" pill style="margin-right: 20px">
+<sl-button id="submitBtn" size="large" type="success" pill style="margin-right: 20px"
+    @click="alert('Hello World!')">
     <sl-icon slot="prefix" name="arrow-right-circle-fill"></sl-icon>
     Submit report
 </sl-button>
+</span>
 
-<script>
-
-</script>
+<script type="module" src="/js/common.js"></script>
+<script type="module" src="/js/request.js"></script>
 </body>
 </html>
