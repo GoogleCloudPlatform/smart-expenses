@@ -39,12 +39,12 @@
 <br>
 <br>
 
-<sl-alert type="warning" open>
+<sl-alert type="warning" open v-if="submissionSent == false">
     <sl-icon slot="icon" name="exclamation-triangle"></sl-icon>
     <strong>Report not submitted</strong><br>
     Your report hasn't been submitted yet. Feel free to add new receipts, and click "Submit report" to submit your report for approval.
 </sl-alert>
-<sl-alert type="primary" open>
+<sl-alert type="primary" open v-if="submissionSent == true">
     <sl-icon slot="icon" name="info-circle"></sl-icon>
     <strong>Report submitted</strong><br>
     Your report has been submitted, and is now awaiting validation from your manager.
