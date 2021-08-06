@@ -11,7 +11,7 @@ var app = new Vue({
 
             this.images = [];
             var vm = this;
-            Array.from(files).forEach((f, idx) => {
+            Array.from(files).forEach(f => {
                 var reader = new FileReader();
                 reader.onload = (e) => {
                     vm.images.push({
