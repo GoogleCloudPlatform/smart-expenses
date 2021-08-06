@@ -2,7 +2,8 @@ var app = new Vue({
     el: '#request',
     data: {
         reportId: window.location.pathname.substring(9).toUpperCase(),
-        images: []
+        images: [],
+        submissionSent: false
     },
     methods: {
         onFileChange: function(e) {
@@ -31,6 +32,8 @@ var app = new Vue({
 document.querySelector("#formFiles").addEventListener('sl-submit', async (event) => {
     const reportId = app.reportId;
     const fileList = Array.from(document.querySelector("#filesInput").files);
+
+    app.submissionSent = true;
 
     // store in GCS via Firestore Storage
     const storageRef = firebase.storage().ref();
