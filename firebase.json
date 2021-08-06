@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "easy-ai-serverless",
     "public": "public",
     "ignore": [
       "firebase.json",

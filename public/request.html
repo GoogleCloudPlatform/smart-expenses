@@ -9,8 +9,10 @@
     document.documentElement.classList.add('js');
   </script>
   <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.47/dist/themes/base.css">
   <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.47/dist/shoelace.js"></script>
+
   <link rel="stylesheet" href="/css/style.css">
 </head>
 
@@ -19,7 +21,7 @@
 <h1><sl-icon slot="prefix" name="file-earmark-plus-fill"></sl-icon> Report: {{reportId}}</h1>
 
 <sl-form id="formFiles">
-<input type="hidden" name="reportId" v-model="reportId">
+<input type="hidden" accept="image/*" name="reportId" v-model="reportId">
 
 <div v-if="images">
     <sl-tooltip v-for="img in images" :content="img.title">
@@ -52,6 +54,10 @@
 </span>
 
 </sl-form>
+
+<script src="https://www.gstatic.com/firebasejs/8.9.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.9.0/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.9.0/firebase-storage.js"></script>
 
 <script type="module" src="/js/common.js"></script>
 <script type="module" src="/js/request.js"></script>

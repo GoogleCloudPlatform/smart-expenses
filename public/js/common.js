@@ -1,3 +1,17 @@
+// Configure Firebase
+if (firebase !== undefined) {
+  var firebaseConfig = {
+    apiKey: "AIzaSyCPLllU6CIdfymjQvdEqPAgReB0Rn3Bm_A",
+    authDomain: "easy-ai-serverless.firebaseapp.com",
+    projectId: "easy-ai-serverless",
+    storageBucket: "smart-expenses-incoming-receipts",
+    messagingSenderId: "770605692057",
+    appId: "1:770605692057:web:e7fa3f0b887fc8c5413408"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+}
+
 // Let Vue.js ignore "sl-*" elements from Shoelace.js
 Vue.config.ignoredElements = [/^sl-/];
 
