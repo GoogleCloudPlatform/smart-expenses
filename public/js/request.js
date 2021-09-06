@@ -44,21 +44,6 @@ document.querySelector("#formFiles").addEventListener('sl-submit', async (event)
     // TODO: ensure all files are uploaded before actually starting the call to the function workflow invoker
 
     // call function to start workflow execution
-    const fileNames = fileList.map(f => f.name);
-    // const body = { reportId, fileNames };
-    const body = {
-        inputDocuments: {
-            gcsPrefix: {
-                gcsUriPrefix: `gs://smart-expenses-incoming-receipts/${reportId}`
-            }
-        },
-        documentOutputConfig: {
-            gcsOutputConfig: {
-                gcsUri: `gs://smart-expenses-parsed-receipts/${reportId}`
-            }
-        },
-        skipHumanReview: true
-    }
 
     // TODO: avoid hard-coded function URL
     const fnUrl = "https://europe-west1-easy-ai-serverless.cloudfunctions.net/invoke-workflow";
@@ -66,7 +51,7 @@ document.querySelector("#formFiles").addEventListener('sl-submit', async (event)
         const fnWorkflowResp = await fetch(fnUrl, {
             method: "POST",
             headers: { "Content-Type" : "application/json" },
-            body: JSON.stringify(body)
+            body: JSON.stringify({ reportId })
         });
         const outcome = await fnWorkflowResp.json();
         console.log("Function workflow outcome", outcome);

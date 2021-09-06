@@ -34,9 +34,7 @@ exports.invokeWorkflow = async (req, res) => {
     try {
       const execResponse = await client.createExecution({
         parent: client.workflowPath(PROJECT_ID, WORKFLOW_REGION, WORKFLOW_NAME),
-        execution: {
-          argument: argument
-        }
+        execution: { argument }
       });
       console.log(`Batch processing receipts workflow execution request: ${JSON.stringify(execResponse)}`);
 
