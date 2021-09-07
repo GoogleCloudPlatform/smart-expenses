@@ -10,7 +10,12 @@ main:
             - report_id: ${input.reportId}
             - bucket_input: "gs://smart-expenses-incoming-receipts/"
             - bucket_output: "gs://smart-expenses-parsed-receipts/"
-            - database_root: ${"projects/" + sys.get_env("GOOGLE_CLOUD_PROJECT_ID") + "/databases/(default)/documents/requests/"}
+    - update_status_to_submitted:
+        call: update_status
+        args:
+            report_id: ${report_id}
+            status: "SUBMITTED"
+            
     - invoke_document_ai:
         call: http.post
         args:
@@ -26,6 +31,11 @@ main:
                         gcsUri: ${bucket_output + report_id}
                 skipHumanReview: true
         result: document_ai_response
+    - update_status_to_processing:
+        call: update_status
+        args:
+            report_id: ${report_id}
+            status: "PROCESSING"
     - get_operation_name:
         assign:
             - operation_name: ${document_ai_response.body.name}
@@ -54,12 +64,46 @@ main:
         args:
             seconds: 10
         next: call_lro_watcher
+
     - check_error_or_response:
         switch:
             - condition: ${"error" in lro_update.body}
-              next: log_error
+              next: on_error
         next: final_step
-    - log_error:
+    - on_error:
+        call: update_status
+        args:
+            report_id: ${report_id}
+            status: "ERROR"
+    - return_error:
         return: ${lro_update.body.error}
     - final_step:
+        call: update_status
+        args:
+            report_id: ${report_id}
+            status: "FINISHED"
+    - return_final_step:
         return: ${lro_update.body.metadata}
+
+update_status:
+    params: [report_id, status]
+    steps:
+        - define_db_root:
+            assign:
+                - database_root: ${"projects/" + sys.get_env("GOOGLE_CLOUD_PROJECT_ID") + "/databases/(default)/documents/requests/"}
+        - patch_doc_firestore:
+            call: googleapis.firestore.v1.projects.databases.documents.patch
+            args:
+                name: ${database_root + report_id}
+                updateMask:
+                    fieldPaths: ['status']
+                body:
+                    fields:
+                        status:
+                            stringValue: ${status}
+            result: status_update_result
+        - log_result:
+            call: sys.log
+            args:
+                text: ${report_id + " updated to status " + status}    
+    
