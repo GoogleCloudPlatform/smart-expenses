@@ -11,10 +11,11 @@ main:
             - bucket_input: "gs://smart-expenses-incoming-receipts/"
             - bucket_output: "gs://smart-expenses-parsed-receipts/"
     - update_status_to_submitted:
-        call: update_status
+        call: update_firestore
         args:
             report_id: ${report_id}
-            status: "SUBMITTED"
+            field: "status"
+            value: "SUBMITTED"
             
     - invoke_document_ai:
         call: http.post
@@ -32,10 +33,11 @@ main:
                 skipHumanReview: true
         result: document_ai_response
     - update_status_to_processing:
-        call: update_status
+        call: update_firestore
         args:
             report_id: ${report_id}
-            status: "PROCESSING"
+            field: "status"
+            value: "PROCESSING"
     - get_operation_name:
         assign:
             - operation_name: ${document_ai_response.body.name}
@@ -49,14 +51,14 @@ main:
             url: ${"https://eu-documentai.googleapis.com/v1/" + operation_name}
             auth:
                 type: OAuth2
-        result: lro_update
+        result: document_ai_response
     - log_new_lro_update:
         call: sys.log
         args:
-            text: ${lro_update.body}        
+            text: ${document_ai_response.body}        
     - check_lro_status:
         switch:
-            - condition: ${"done" in lro_update.body and lro_update.body.done == True}
+            - condition: ${"done" in document_ai_response.body and document_ai_response.body.done == True}
               next: check_error_or_response
         next: wait_a_bit
     - wait_a_bit:
@@ -67,43 +69,101 @@ main:
 
     - check_error_or_response:
         switch:
-            - condition: ${"error" in lro_update.body}
+            - condition: ${"error" in document_ai_response.body}
               next: on_error
-        next: final_step
+        next: create_callback
     - on_error:
-        call: update_status
+        call: update_firestore
         args:
             report_id: ${report_id}
-            status: "ERROR"
+            field: "status"
+            value: "ERROR"
     - return_error:
-        return: ${lro_update.body.error}
-    - final_step:
-        call: update_status
+        return: ${document_ai_response.body.error}
+    - update_status_to_processed:
+        call: update_firestore
         args:
             report_id: ${report_id}
-            status: "FINISHED"
-    - return_final_step:
-        return: ${lro_update.body.metadata}
+            field: "status"
+            value: "PROCESSED"
 
-update_status:
-    params: [report_id, status]
+    - create_callback:
+        call: events.create_callback_endpoint
+        args:
+            http_callback_method: "POST"
+        result: callback_details
+    - log_callback_details:
+        call: sys.log
+        args:
+            text: ${callback_details}
+
+    - store_callback_details:
+        call: update_firestore
+        args:
+            report_id: ${report_id}
+            field: "callback"
+            value: ${callback_details.url}
+    - update_status_to_awaiting_approval:
+        call: update_firestore
+        args:
+            report_id: ${report_id}
+            field: "status"
+            value: "AWAITING_APPROVAL"
+    - await_callback:
+        call: events.await_callback
+        args:
+            callback: ${callback_details}
+            timeout: 3600
+        result: callback_request
+    - assign_approval:
+        assign:
+            - approved: ${callback_request.http_request.body.approved}
+    
+    - store_approval:
+        switch:
+            - condition: ${callback_request.http_request.body.approved}
+              steps:
+                    - store_approved:
+                        call: update_firestore
+                        args:
+                            report_id: ${report_id}
+                            field: "status"
+                            value: "APPROVED"
+            - condition: ${not callback_request.http_request.body.approved}
+              steps:
+                    - store_rejected:
+                        call: update_firestore
+                        args:
+                            report_id: ${report_id}
+                            field: "status"
+                            value: "REJECTED"
+    - return_final_step:
+        return: ${document_ai_response.body.metadata}
+
+update_firestore:
+    params: [report_id, field, value, type: "string"]
     steps:
         - define_db_root:
             assign:
                 - database_root: ${"projects/" + sys.get_env("GOOGLE_CLOUD_PROJECT_ID") + "/databases/(default)/documents/requests/"}
+                - firestoreType: ${type + "Value"}
+                - fieldTypeAndValue: {}
+                - fieldTypeAndValue[firestoreType]: ${value}
+                - body: {fields: {}}
+                - body.fields[field]: ${fieldTypeAndValue}
+        - log_firestore_change_request:
+            call: sys.log
+            args:
+                text: ${report_id + " > " + field + " = " + value + " (" + type + ")"}
         - patch_doc_firestore:
             call: googleapis.firestore.v1.projects.databases.documents.patch
             args:
                 name: ${database_root + report_id}
                 updateMask:
-                    fieldPaths: ['status']
-                body:
-                    fields:
-                        status:
-                            stringValue: ${status}
-            result: status_update_result
-        - log_result:
+                    fieldPaths: [${field}]
+                body: ${body}
+            result: firestore_update_result
+        - log_firestore_change_response:
             call: sys.log
             args:
-                text: ${report_id + " updated to status " + status}    
-    
+                text: ${firestore_update_result}

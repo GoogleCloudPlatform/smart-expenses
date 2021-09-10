@@ -45,6 +45,19 @@ gcloud functions deploy invoke-workflow \
   --allow-unauthenticated
 ```
 
+Function calling the workflow callback from the web frontend:
+```
+gcloud functions deploy approval-callback \
+  --region=${FUNCTION_REGION} \
+  --source=./services/approval-callback \
+  --runtime nodejs14 \
+  --entry-point=approvalCallbackCall \
+  --trigger-http \
+  --allow-unauthenticated
+```
+
+*Note:* The service account used by the function calling the callback URL should have the `Workflows Editor` (or `Workflows Admin`) and `Service Account Token Creator` permissions.
+
 # Workflow
 
 ```

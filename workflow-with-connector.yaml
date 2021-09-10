@@ -1,0 +1,83 @@
+main:
+    params: [input]
+    steps:
+    - start:
+        call: sys.log
+        args:
+            text: ${input}
+    - vars:
+        assign:
+            - report_id: ${input.reportId}
+            - bucket_input: "gs://smart-expenses-incoming-receipts/"
+            - bucket_output: "gs://smart-expenses-parsed-receipts/"
+            - project: ${sys.get_env("GOOGLE_CLOUD_PROJECT_ID")}
+    - log_vars:
+        call: sys.log
+        args:
+            text: ${report_id + " / " + bucket_input + " / " + bucket_output + " / " + project}
+    - update_status_to_submitted:
+        call: update_status
+        args:
+            report_id: ${report_id}
+            status: "SUBMITTED"
+            
+    - invoke_document_ai:
+        call: googleapis.documentai.v1.projects.locations.processors.batchProcess
+        args:
+            name: ${"projects/" + project + "/locations/eu/processors/c799b15b13e7c838"}
+            location: "eu"
+            body:
+                inputDocuments:
+                    gcsPrefix:
+                        gcsUriPrefix: ${bucket_input + report_id}
+                documentOutputConfig:
+                    gcsOutputConfig: 
+                        gcsUri: ${bucket_output + report_id}
+                skipHumanReview: true
+        result: document_ai_response
+    - log_document_ai_response:
+        call: sys.log
+        args:
+            text: ${document_ai_response}
+
+    - check_error_or_response:
+        switch:
+            - condition: ${"error" in document_ai_response.body}
+              next: on_error
+        next: final_step
+    - on_error:
+        call: update_status
+        args:
+            report_id: ${report_id}
+            status: "ERROR"
+    - return_error:
+        return: ${document_ai_response.body.error}
+    - final_step:
+        call: update_status
+        args:
+            report_id: ${report_id}
+            status: "FINISHED"
+    - return_final_step:
+        return: ${document_ai_response.body.metadata}
+
+update_status:
+    params: [report_id, status]
+    steps:
+        - define_db_root:
+            assign:
+                - database_root: ${"projects/" + sys.get_env("GOOGLE_CLOUD_PROJECT_ID") + "/databases/(default)/documents/requests/"}
+        - patch_doc_firestore:
+            call: googleapis.firestore.v1.projects.databases.documents.patch
+            args:
+                name: ${database_root + report_id}
+                updateMask:
+                    fieldPaths: ['status']
+                body:
+                    fields:
+                        status:
+                            stringValue: ${status}
+            result: status_update_result
+        - log_result:
+            call: sys.log
+            args:
+                text: ${report_id + " updated to status " + status}
