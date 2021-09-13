@@ -54,8 +54,7 @@ var app = new Vue({
 })
 
 const db = firebase.firestore();
-const translationDoc = db.collection("requests").doc(reportId);
-translationDoc.onSnapshot((doc) => {
+db.collection("requests").doc(reportId).onSnapshot((doc) => {
     if (doc.data()) {
         app.status = doc.data().status;
         console.log("New status from Firestore: ", app.status);
