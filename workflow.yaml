@@ -108,7 +108,7 @@ main:
         args:
             report_id: ${report_id}
             field: "status"
-            value: "AWAITING_APPROVAL"
+            value: "AWAITING"
     - await_callback:
         call: events.await_callback
         args:
