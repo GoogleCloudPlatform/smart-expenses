@@ -31,28 +31,22 @@
 <input id="filesInput" type="file"  @change="onFileChange" multiple style="display: none;">
 
 <br>
-<sl-button id="addBtn" size="large" type="primary" pill @click="clickFileChooser" :disabled="submissionSent == true">
+<sl-button id="addBtn" size="large" type="primary" pill @click="clickFileChooser" :disabled="status != 'NOT_SUBMITTED'">
     <sl-icon slot="prefix" name="file-earmark-plus-fill"></sl-icon>
     Select receipts
 </sl-button>
 
 <br>
 <br>
-
-<sl-alert type="warning" open v-if="submissionSent == false">
-    <sl-icon slot="icon" name="exclamation-triangle"></sl-icon>
-    <strong>Report not submitted</strong><br>
-    Your report hasn't been submitted yet. Feel free to add new receipts, and click "Submit report" to submit your report for approval.
-</sl-alert>
-<sl-alert type="primary" open v-if="submissionSent == true">
-    <sl-icon slot="icon" name="info-circle"></sl-icon>
-    <strong>Report submitted</strong><br>
-    Your report has been submitted, and is now awaiting validation from your manager.
+<sl-alert :type.prop="alert" open>
+    <sl-icon slot="icon" :name.prop="icon"></sl-icon>
+    <strong>{{ title }}</strong><br>
+    {{ description }}
 </sl-alert>
 
 <br>
 
-<sl-button submit id="submitBtn" size="large" type="success" pill :disabled="submissionSent == true || images.length == 0">
+<sl-button submit id="submitBtn" size="large" type="success" pill :disabled="status != 'NOT_SUBMITTED' || images.length == 0">
     <sl-icon slot="prefix" name="arrow-right-circle-fill"></sl-icon>
     Submit report
 </sl-button>

@@ -1,9 +1,33 @@
+const allStates = {
+    NOT_SUBMITTED: ['primary', 'info-circle', 'Report not submitted', 'The report has not been submitted yet.'],
+    SUBMITTED: ['primary', 'check2-circle', 'Report submitted', 'Your report has been submitted, and will be processed soon, then your manager will review your submission.'],
+    PROCESSING: ['primary', 'info-circle', 'Report is being processed', 'Your report has been submitted, and is currently being processed.'],
+    AWAITING: ['primary', 'info-circle', 'Report is awaiting validation', 'Your manager has received your report, will review it, and then validate or reject it.'],
+    APPROVED: ['success', 'check2-circle', 'Report validated', 'Your manager has validated your report.'],
+    REJECTED: ['danger', 'exclamation-octagon', 'Report rejected', 'Your manager has rejected your report.'],
+    ERROR: ['danger', 'exclamation-octagon', 'Error occured', 'An error occurred while processing your report. Please contact your IT department.']
+}
+
+const reportId = window.location.pathname.substring(9);
+
 var app = new Vue({
     el: '#request',
-    data: {
-        reportId: window.location.pathname.substring(9).toUpperCase(),
+    data: { 
+        reportId: reportId,
         images: [],
-        submissionSent: false
+        status: "NOT_SUBMITTED",
+        alert: allStates["NOT_SUBMITTED"][0],
+        icon: allStates["NOT_SUBMITTED"][1],
+        title: allStates["NOT_SUBMITTED"][2],
+        description: allStates["NOT_SUBMITTED"][3]
+    },
+    watch: {
+        status: function(newVal, oldVal) {
+            this.alert = allStates[this.status][0];
+            this.icon = allStates[this.status][1];
+            this.title = allStates[this.status][2];
+            this.description = allStates[this.status][3];
+        }
     },
     methods: {
         onFileChange: function(e) {
@@ -29,11 +53,20 @@ var app = new Vue({
     }
 })
 
+const db = firebase.firestore();
+const translationDoc = db.collection("requests").doc(reportId);
+translationDoc.onSnapshot((doc) => {
+    if (doc.data()) {
+        app.status = doc.data().status;
+        console.log("New status from Firestore: ", app.status);
+    }
+});
+
 document.querySelector("#formFiles").addEventListener('sl-submit', async (event) => {
     const reportId = app.reportId;
     const fileList = Array.from(document.querySelector("#filesInput").files);
 
-    app.submissionSent = true;
+    app.status = "SUBMITTED";
 
     // store in GCS via Firestore Storage
     const storageRef = firebase.storage().ref();
@@ -54,7 +87,7 @@ document.querySelector("#formFiles").addEventListener('sl-submit', async (event)
             body: JSON.stringify({ reportId })
         });
         const outcome = await fnWorkflowResp.json();
-        console.log("Function workflow outcome", outcome);
+        console.log("Workflow execution", outcome);
     } catch (e) {
         // TODO: notify web UI in case of error
         console.error(e);
