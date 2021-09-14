@@ -24,11 +24,11 @@
 <template v-for="report in reports" v-bind:key="report.id">
     <hr>
     <h2>Report: {{ report.id }}</h2>
-    <sl-button type="success">
+    <sl-button type="success" pill @click="approve(report.id)">
         <sl-icon slot="prefix" name="check2-circle"></sl-icon>
         Approve
     </sl-button>
-    <sl-button type="danger">
+    <sl-button type="danger" pill @click="reject(report.id)">
         <sl-icon slot="prefix" name="exclamation-octagon"></sl-icon>
         Reject
     </sl-button>
