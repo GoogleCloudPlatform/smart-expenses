@@ -7,12 +7,14 @@ var app = new Vue({
     data: {
         reportsAwaiting: [],
         reportsApproved: [],
-        reportsRejected: []
+        reportsRejected: [],
+        reportsError: [],
     },
     firestore: {
         reportsAwaiting: db.collection("requests").where("status", "==", "AWAITING"),
         reportsApproved: db.collection("requests").where("status", "==", "APPROVED"),
         reportsRejected: db.collection("requests").where("status", "==", "REJECTED"),
+        reportsError: db.collection("requests").where("status", "==", "ERROR"),
     },
     methods: {
         approve: function(reportId) {

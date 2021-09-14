@@ -34,6 +34,10 @@
         <sl-icon name="exclamation-octagon"></sl-icon> &nbsp;
         Rejected
     </sl-tab>
+    <sl-tab slot="nav" panel="error">
+        <sl-icon name="bug"></sl-icon> &nbsp;
+        Error
+    </sl-tab>
   
     <sl-tab-panel name="awaiting">
         <template v-for="report in reportsAwaiting" v-bind:key="report.id">
@@ -63,6 +67,15 @@
     </sl-tab-panel>
     <sl-tab-panel name="rejected">
         <template v-for="report in reportsRejected" v-bind:key="report.id">
+            <sl-card class="card-header">
+                <div slot="header">
+                    Report: <strong>{{ report.id }}</strong>
+                </div>
+            </sl-card>
+        </template>    
+    </sl-tab-panel>
+    <sl-tab-panel name="error">
+        <template v-for="report in reportsError" v-bind:key="report.id">
             <sl-card class="card-header">
                 <div slot="header">
                     Report: <strong>{{ report.id }}</strong>
