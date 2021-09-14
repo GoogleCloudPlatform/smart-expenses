@@ -110,11 +110,27 @@ main:
             field: "status"
             value: "AWAITING"
     - await_callback:
-        call: events.await_callback
-        args:
-            callback: ${callback_details}
-            timeout: 3600
-        result: callback_request
+        try:
+            call: events.await_callback
+            args:
+                callback: ${callback_details}
+                timeout: 600
+            result: callback_request
+        except:
+            as: e
+            steps:
+                - update_status_to_error:
+                    call: update_firestore
+                    args:
+                        report_id: ${report_id}
+                        field: "status"
+                        value: "ERROR"
+                - log_error:
+                    call: sys.log
+                    args:
+                        severity: "ERROR"
+                        text: ${"Awaiting callback error " + e.message}
+                    next: return_final_step
     - assign_approval:
         assign:
             - approved: ${callback_request.http_request.body.approved}
