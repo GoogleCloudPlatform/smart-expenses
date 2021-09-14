@@ -24,3 +24,22 @@ h1 {
     border-width: var(--sl-spacing-x-small);
     border-color: white;
 }
+
+sl-tab::part(base) {
+    font-size: var(--sl-font-size-x-large);
+}
+
+sl-tab-panel {
+    display: flex; 
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+sl-card {
+    margin: 10px;
+    box-shadow: var(--sl-shadow-x-large);
+}
+  
+.card-header sl-icon-button {
+    font-size: var(--sl-font-size-medium);
+}

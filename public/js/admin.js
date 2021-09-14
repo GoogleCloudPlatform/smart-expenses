@@ -5,10 +5,14 @@ const db = firebase.firestore();
 var app = new Vue({
     el: '#admin',
     data: {
-        reports: []
+        reportsAwaiting: [],
+        reportsApproved: [],
+        reportsRejected: []
     },
     firestore: {
-        reports: db.collection("requests").where("status", "==", "AWAITING")
+        reportsAwaiting: db.collection("requests").where("status", "==", "AWAITING"),
+        reportsApproved: db.collection("requests").where("status", "==", "APPROVED"),
+        reportsRejected: db.collection("requests").where("status", "==", "REJECTED"),
     },
     methods: {
         approve: function(reportId) {
@@ -20,7 +24,7 @@ var app = new Vue({
             this.callbackCall(reportId, false);
         },
         callbackCall: async function(reportId, approval) {
-            const report = this.reports.find(report => report.id == reportId);
+            const report = this.reportsAwaiting.find(report => report.id == reportId);
             
             // TODO: avoid hard-coding the function URL
             const callbackFunctionUrl = "https://europe-west1-easy-ai-serverless.cloudfunctions.net/approval-callback";
