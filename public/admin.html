@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Smart Expenses — Administration</title>
+  <script type="module">
+    document.documentElement.classList.remove('no-js');
+    document.documentElement.classList.add('js');
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vuefire@2.2.5/dist/vuefire.min.js" integrity="sha256-vQM0eZquaU0G0GfHMapDIbHumVQBsf5ub5jQIst9iHw=" crossorigin="anonymous"></script>
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.47/dist/themes/base.css">
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.47/dist/shoelace.js"></script>
+
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+<span id="admin">
+<h1><sl-icon slot="prefix" name="file-earmark-plus-fill"></sl-icon> Pending expense reports</h1>
+
+<template v-for="report in reports" v-bind:key="report.id">
+    <hr>
+    <h2>Report: {{ report.id }}</h2>
+    <sl-button type="success">
+        <sl-icon slot="prefix" name="check2-circle"></sl-icon>
+        Approve
+    </sl-button>
+    <sl-button type="danger">
+        <sl-icon slot="prefix" name="exclamation-octagon"></sl-icon>
+        Reject
+    </sl-button>
+    <br>
+    <br>
+</template>
+
+</span>
+
+<script src="https://www.gstatic.com/firebasejs/8.9.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.9.0/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.9.0/firebase-storage.js"></script>
+
+<script type="module" src="/js/common.js"></script>
+<script type="module" src="/js/admin.js"></script>
+</body>
+</html>
