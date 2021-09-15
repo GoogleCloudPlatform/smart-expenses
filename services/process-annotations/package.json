@@ -2,5 +2,7 @@
   "name": "process-docai-annotations",
   "version": "0.0.1",
   "dependencies": {
+    "@google-cloud/storage": "^5.14.2",
+    "@google-cloud/firestore": "^4.15.1"
   }
 }

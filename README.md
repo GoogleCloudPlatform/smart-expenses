@@ -58,6 +58,16 @@ gcloud functions deploy approval-callback \
 
 *Note:* The service account used by the function calling the callback URL should have the `Workflows Editor` (or `Workflows Admin`) and `Service Account Token Creator` permissions.
 
+Function analysing the Doc AI output
+```
+gcloud functions deploy process-annotations \
+  --region=${FUNCTION_REGION} \
+  --source=./services/process-annotations \
+  --runtime nodejs14 \
+  --entry-point=processAnnotations \
+  --trigger-http
+```
+
 ## Firestore setup
 
 To allow the web pages to access the data (in read-only mode) in Firestore, the security rules for Firestore should be updated with:
