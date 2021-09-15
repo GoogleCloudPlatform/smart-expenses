@@ -69,10 +69,12 @@ document.querySelector("#formFiles").addEventListener('sl-submit', async (event)
 
     // store in GCS via Firestore Storage
     const storageRef = firebase.storage().ref();
-    fileList.forEach(f => {
+    for await (const f of fileList) {
         const receiptRef = storageRef.child(`${reportId}/${f.name}`);
-        receiptRef.put(f).then(e => console.log("Uploaded", f.name));
-    });
+        await receiptRef.put(f);
+        await receiptRef.getDownloadURL();
+        console.log("Uploaded", f.name);
+    }
     // TODO: ensure all files are uploaded before actually starting the call to the function workflow invoker
 
     // call function to start workflow execution
