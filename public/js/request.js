@@ -71,9 +71,10 @@ document.querySelector("#formFiles").addEventListener('sl-submit', async (event)
     const storageRef = firebase.storage().ref();
     for await (const f of fileList) {
         const receiptRef = storageRef.child(`${reportId}/${f.name}`);
-        await receiptRef.put(f);
-        await receiptRef.getDownloadURL();
+        const uploadSnapshot = await receiptRef.put(f);
+        const downloadUrl = await uploadSnapshot.ref.getDownloadURL();
         console.log("Uploaded", f.name);
+        console.log("Downlaod URL", downloadUrl);
     }
     // TODO: ensure all files are uploaded before actually starting the call to the function workflow invoker
 
