@@ -9,6 +9,7 @@ var app = new Vue({
         reportsApproved: [],
         reportsRejected: [],
         reportsError: [],
+        actionOnReport: []
     },
     firestore: {
         reportsAwaiting: db.collection("requests").where("status", "==", "AWAITING"),
@@ -17,13 +18,10 @@ var app = new Vue({
         reportsError: db.collection("requests").where("status", "==", "ERROR"),
     },
     methods: {
-        approve: function(reportId) {
-            console.log(`Approve ${reportId}`);
-            this.callbackCall(reportId, true);
-        },
-        reject: function(reportId) {
-            console.log(`Reject ${reportId}`)
-            this.callbackCall(reportId, false);
+        approval: function(reportId, approval) {
+            console.log(`${approval ? 'Approve' : 'Reject'} ${reportId}`);
+            this.actionOnReport.push(reportId);
+            this.callbackCall(reportId, approval);
         },
         callbackCall: async function(reportId, approval) {
             const report = this.reportsAwaiting.find(report => report.id == reportId);

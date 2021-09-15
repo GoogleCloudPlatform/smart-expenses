@@ -56,11 +56,11 @@
                 <div slot="header">
                     Report: <strong>{{ report.id }}</strong>
                 </div>
-                <sl-button type="success" pill @click="approve(report.id)">
+                <sl-button type="success" pill @click="approval(report.id, true)" :disabled="actionOnReport.includes(report.id)">
                     <sl-icon slot="prefix" name="check2-circle"></sl-icon>
                     Approve
                 </sl-button>
-                <sl-button type="danger" pill @click="reject(report.id)">
+                <sl-button type="danger" pill @click="approval(report.id, false)" :disabled="actionOnReport.includes(report.id)">
                     <sl-icon slot="prefix" name="exclamation-octagon"></sl-icon>
                     Reject
                 </sl-button>
