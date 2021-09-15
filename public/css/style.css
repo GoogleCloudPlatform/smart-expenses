@@ -25,7 +25,7 @@ h1 {
     border-color: white;
 }
 
-sl-tab::part(base) {
+sl-tab::part(base), sl-breadcrumb-item::part(base) {
     font-size: var(--sl-font-size-x-large);
 }
 

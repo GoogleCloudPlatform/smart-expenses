@@ -20,6 +20,17 @@
 <span id="request">
 <h1><sl-icon slot="prefix" name="file-earmark-plus-fill"></sl-icon> Expense report: {{reportId}}</h1>
 
+<sl-breadcrumb>
+    <sl-breadcrumb-item href="/">
+        <sl-icon slot="prefix" name="house"></sl-icon>
+        Home
+    </sl-breadcrumb-item>
+    <sl-breadcrumb-item>
+        New expense report
+    </sl-breadcrumb-item>
+</sl-breadcrumb>
+<br>
+
 <sl-form id="formFiles">
 <input type="hidden" accept="image/*" name="reportId" v-model="reportId">
 
