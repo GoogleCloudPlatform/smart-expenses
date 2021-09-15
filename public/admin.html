@@ -51,11 +51,28 @@
     </sl-tab>
   
     <sl-tab-panel name="awaiting">
-        <template v-for="report in reportsAwaiting" v-bind:key="report.id">
+        <template v-for="report in reportsAwaiting" :key="report.id">
             <sl-card class="card-header">
                 <div slot="header">
                     Report: <strong>{{ report.id }}</strong>
                 </div>
+                <div v-for="file in report.summary">
+                    <sl-details :summary="file.summary.supplier || 'Unknown vendor'">
+                        <ul>
+                            <li v-for="line in file.summary.lineItems">
+                                {{ line }}
+                            </li>
+                        </ul>
+                        <div v-if="file.summary.total">
+                            <strong>
+                                TOTAL: {{ file.summary.total }}
+                                <span v-if="file.summary.currency">{{ file.summary.currency }}</span>
+                            </strong>
+                        </div>
+                    </sl-details>
+                    <br>
+                </div>
+                <br>
                 <sl-button type="success" pill @click="approval(report.id, true)" :disabled="actionOnReport.includes(report.id)">
                     <sl-icon slot="prefix" name="check2-circle"></sl-icon>
                     Approve
@@ -73,6 +90,23 @@
                 <div slot="header">
                     Report: <strong>{{ report.id }}</strong>
                 </div>
+                <div v-for="file in report.summary">
+                    <sl-details :summary="file.summary.supplier || 'Unknown vendor'">
+                        <ul>
+                            <li v-for="line in file.summary.lineItems">
+                                {{ line }}
+                            </li>
+                        </ul>
+                        <div v-if="file.summary.total">
+                            <strong>
+                                TOTAL: {{ file.summary.total }}
+                                <span v-if="file.summary.currency">{{ file.summary.currency }}</span>
+                            </strong>
+                        </div>
+                    </sl-details>
+                    <br>
+                </div>
+                <br>
             </sl-card>
         </template>
     </sl-tab-panel>
@@ -82,6 +116,23 @@
                 <div slot="header">
                     Report: <strong>{{ report.id }}</strong>
                 </div>
+                <div v-for="file in report.summary">
+                    <sl-details :summary="file.summary.supplier || 'Unknown vendor'">
+                        <ul>
+                            <li v-for="line in file.summary.lineItems">
+                                {{ line }}
+                            </li>
+                        </ul>
+                        <div v-if="file.summary.total">
+                            <strong>
+                                TOTAL: {{ file.summary.total }}
+                                <span v-if="file.summary.currency">{{ file.summary.currency }}</span>
+                            </strong>
+                        </div>
+                    </sl-details>
+                    <br>
+                </div>
+                <br>
             </sl-card>
         </template>    
     </sl-tab-panel>
@@ -91,6 +142,23 @@
                 <div slot="header">
                     Report: <strong>{{ report.id }}</strong>
                 </div>
+                <div v-for="file in report.summary">
+                    <sl-details :summary="file.summary.supplier || 'Unknown vendor'">
+                        <ul>
+                            <li v-for="line in file.summary.lineItems">
+                                {{ line }}
+                            </li>
+                        </ul>
+                        <div v-if="file.summary.total">
+                            <strong>
+                                TOTAL: {{ file.summary.total }}
+                                <span v-if="file.summary.currency">{{ file.summary.currency }}</span>
+                            </strong>
+                        </div>
+                    </sl-details>
+                    <br>
+                </div>
+                <br>
             </sl-card>
         </template>    
     </sl-tab-panel>

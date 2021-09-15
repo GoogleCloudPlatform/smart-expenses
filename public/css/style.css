@@ -39,6 +39,14 @@ sl-card {
     margin: 10px;
     box-shadow: var(--sl-shadow-x-large);
 }
+
+sl-details {
+    box-shadow: var(--sl-shadow-large);
+}
+
+sl-details::part(header) {
+    font-weight: var(--sl-font-weight-bold);
+}
   
 .card-header sl-icon-button {
     font-size: var(--sl-font-size-medium);
