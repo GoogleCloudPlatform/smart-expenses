@@ -10,19 +10,19 @@ main:
             - report_id: ${input.reportId}
             - bucket_input: "gs://smart-expenses-incoming-receipts/"
             - bucket_output: "gs://smart-expenses-parsed-receipts/"
+            - project: ${sys.get_env("GOOGLE_CLOUD_PROJECT_ID")}
     - update_status_to_submitted:
         call: update_firestore
         args:
             report_id: ${report_id}
             field: "status"
-            value: "SUBMITTED"
+            value: "PROCESSING"
             
     - invoke_document_ai:
-        call: http.post
+        call: googleapis.documentai.v1.projects.locations.processors.batchProcess
         args:
-            url: https://eu-documentai.googleapis.com/v1/projects/770605692057/locations/eu/processors/c799b15b13e7c838:batchProcess
-            auth:
-                type: OAuth2
+            name: ${"projects/" + project + "/locations/eu/processors/c799b15b13e7c838"}
+            location: "eu"
             body:
                 inputDocuments:
                     gcsPrefix:
@@ -32,44 +32,14 @@ main:
                         gcsUri: ${bucket_output + report_id}
                 skipHumanReview: true
         result: document_ai_response
-    - update_status_to_processing:
-        call: update_firestore
-        args:
-            report_id: ${report_id}
-            field: "status"
-            value: "PROCESSING"
-    - get_operation_name:
-        assign:
-            - operation_name: ${document_ai_response.body.name}
-    - log_operation_name:
+    - log_document_ai_response:
         call: sys.log
         args:
-            text: ${"Operation name = " + operation_name}
-    - call_lro_watcher:
-        call: http.get
-        args:
-            url: ${"https://eu-documentai.googleapis.com/v1/" + operation_name}
-            auth:
-                type: OAuth2
-        result: document_ai_response
-    - log_new_lro_update:
-        call: sys.log
-        args:
-            text: ${document_ai_response.body}        
-    - check_lro_status:
-        switch:
-            - condition: ${"done" in document_ai_response.body and document_ai_response.body.done == True}
-              next: check_error_or_response
-        next: wait_a_bit
-    - wait_a_bit:
-        call: sys.sleep
-        args:
-            seconds: 10
-        next: call_lro_watcher
+            text: ${document_ai_response}
 
     - check_error_or_response:
         switch:
-            - condition: ${"error" in document_ai_response.body}
+            - condition: ${"error" in document_ai_response}
               next: on_error
         next: process_annotations
     - on_error:
@@ -79,7 +49,7 @@ main:
             field: "status"
             value: "ERROR"
     - return_error:
-        return: ${document_ai_response.body.error}
+        return: ${document_ai_response.error}
     
     - process_annotations:
         call: http.post
@@ -163,7 +133,7 @@ main:
                             field: "status"
                             value: "REJECTED"
     - return_final_step:
-        return: ${document_ai_response.body.metadata}
+        return: ${document_ai_response.metadata}
 
 update_firestore:
     params: [report_id, field, value, type: "string"]
