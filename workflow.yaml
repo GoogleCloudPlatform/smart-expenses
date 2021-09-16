@@ -71,7 +71,7 @@ main:
         switch:
             - condition: ${"error" in document_ai_response.body}
               next: on_error
-        next: create_callback
+        next: process_annotations
     - on_error:
         call: update_firestore
         args:
@@ -80,12 +80,21 @@ main:
             value: "ERROR"
     - return_error:
         return: ${document_ai_response.body.error}
-    - update_status_to_processed:
-        call: update_firestore
+    
+    - process_annotations:
+        call: http.post
         args:
-            report_id: ${report_id}
-            field: "status"
-            value: "PROCESSED"
+            url: https://europe-west1-easy-ai-serverless.cloudfunctions.net/process-annotations
+            auth:
+                type: OIDC
+            body:
+                report_id: ${report_id}
+                bucket_path: ${bucket_output}
+        result: process_annotations_result
+    - log_process_annotations_result:
+        call: sys.log
+        args:
+            text: ${process_annotations_result}
 
     - create_callback:
         call: events.create_callback_endpoint
@@ -114,7 +123,7 @@ main:
             call: events.await_callback
             args:
                 callback: ${callback_details}
-                timeout: 600
+                timeout: 3600
             result: callback_request
         except:
             as: e
@@ -170,7 +179,7 @@ update_firestore:
         - log_firestore_change_request:
             call: sys.log
             args:
-                text: ${report_id + " > " + field + " = " + value + " (" + type + ")"}
+                text: ${report_id + " > " + field + " = " + json.encode_to_string(value) + " (" + type + ")"}
         - patch_doc_firestore:
             call: googleapis.firestore.v1.projects.databases.documents.patch
             args:
