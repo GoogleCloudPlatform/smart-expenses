@@ -1,5 +1,6 @@
 const allStates = {
     NOT_SUBMITTED: ['primary', 'info-circle', 'Report not submitted', 'The report has not been submitted yet.'],
+    UPLOADED: ['primary', 'info-circle', 'Receipts uploaded', 'Your receipts have been uploaded successfully.'],
     SUBMITTED: ['primary', 'check2-circle', 'Report submitted', 'Your report has been submitted, and will be processed soon, then your manager will review your submission.'],
     PROCESSING: ['primary', 'info-circle', 'Report is being processed', 'Your report has been submitted, and is currently being processed.'],
     AWAITING: ['primary', 'info-circle', 'Report is awaiting validation', 'Your manager has received your report, will review it, and then validate or reject it.'],
@@ -65,7 +66,6 @@ document.querySelector("#formFiles").addEventListener('sl-submit', async (event)
     const reportId = app.reportId;
     const fileList = Array.from(document.querySelector("#filesInput").files);
 
-    app.status = "SUBMITTED";
 
     // store in GCS via Firestore Storage
     const storageRef = firebase.storage().ref();
@@ -76,10 +76,10 @@ document.querySelector("#formFiles").addEventListener('sl-submit', async (event)
         console.log("Uploaded", f.name);
         console.log("Downlaod URL", downloadUrl);
     }
-    // TODO: ensure all files are uploaded before actually starting the call to the function workflow invoker
+
+    app.status = "UPLOADED";
 
     // call function to start workflow execution
-
     // TODO: avoid hard-coded function URL
     const fnUrl = "https://europe-west1-easy-ai-serverless.cloudfunctions.net/invoke-workflow";
     try {
@@ -94,4 +94,6 @@ document.querySelector("#formFiles").addEventListener('sl-submit', async (event)
         // TODO: notify web UI in case of error
         console.error(e);
     }
+
+    app.status = "SUBMITTED";
 });
