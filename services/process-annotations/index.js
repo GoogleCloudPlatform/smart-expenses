@@ -41,6 +41,8 @@ exports.processAnnotations = async (req, res) => {
     const [file] = await fileInfo.download();
     const {entities} = JSON.parse(file.toString());
 
+    console.log("Entities", JSON.stringify(entities));
+
     var errorMsg = "";
     try {
       const supplier = entities.find(e => e.type == 'supplier_name')?.normalizedValue?.text;
