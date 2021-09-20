@@ -12,10 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
-
-// {"report_id":"RJOxr9R","bucket_path":"gs://smart-expenses-parsed-receipts/"}
-
 const {Storage} = require('@google-cloud/storage');
 const storage = new Storage();
 
